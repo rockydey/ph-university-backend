@@ -34,31 +34,34 @@ const localGuardianValidationSchema = z.object({
   address: z.string({ required_error: 'Local guardian address is required' }),
 });
 
-const studentValidationSchema = z.object({
-  name: nameValidationSchema,
-  gender: z.enum(['male', 'female'], {
-    required_error: 'Gender is required',
-  }),
-  dateOfBirth: z
-    .string({ required_error: 'Date of birth is required' })
-    .refine((date) => !isNaN(Date.parse(date)), {
-      message: 'Invalid date format',
+const createStudentValidationSchema = z.object({
+  body: z.object({
+    student: z.object({
+      name: nameValidationSchema,
+      gender: z.enum(['male', 'female'], {
+        required_error: 'Gender is required',
+      }),
+      dateOfBirth: z
+        .string({ required_error: 'Date of birth is required' })
+        .refine((date) => !isNaN(Date.parse(date)), {
+          message: 'Invalid date format',
+        }),
+      email: z.string({ required_error: 'Email is required' }).email(),
+      contactNo: z.string({ required_error: 'Contact number is required' }),
+      emergencyContactNo: z.string({
+        required_error: 'Emergency contact number is required',
+      }),
+      presentAddress: z.string({
+        required_error: 'Present address is required',
+      }),
+      permanentAddress: z.string({
+        required_error: 'Permanent address is required',
+      }),
+      guardian: guardianValidationSchema,
+      localGuardian: localGuardianValidationSchema,
+      profileImg: z.string().optional(),
     }),
-  email: z.string({ required_error: 'Email is required' }).email(),
-  contactNo: z.string({ required_error: 'Contact number is required' }),
-  emergencyContactNo: z.string({
-    required_error: 'Emergency contact number is required',
   }),
-  presentAddress: z.string({
-    required_error: 'Present address is required',
-  }),
-  permanentAddress: z.string({
-    required_error: 'Permanent address is required',
-  }),
-  guardian: guardianValidationSchema,
-  localGuardian: localGuardianValidationSchema,
-  profileImg: z.string().optional(),
-  isDeleted: z.boolean().optional().default(false),
 });
 
-export const StudentValidation = { studentValidationSchema };
+export const StudentValidation = { createStudentValidationSchema };
