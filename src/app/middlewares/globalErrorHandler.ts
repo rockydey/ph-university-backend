@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { NextFunction, Request, Response } from 'express';
+import { ErrorRequestHandler } from 'express';
 import httpStatus from 'http-status';
 
-const globalErrorHandler = (
+const globalErrorHandler: ErrorRequestHandler = (
   error: any,
-  req: Request,
-  res: Response,
-  next: NextFunction,
+  req,
+  res,
+  next,
 ) => {
   const message = error.message || 'Something went wrong';
 
