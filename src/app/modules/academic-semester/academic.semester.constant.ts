@@ -26,3 +26,13 @@ export const Month: TMonth[] = [
   'November',
   'December',
 ];
+
+type TAcademicSemesterNameCodeMapper = {
+  [key: string]: string;
+};
+
+export const academicSemesterNameCodeMapper: TAcademicSemesterNameCodeMapper = {
+  Autumn: '01',
+  Summer: '02',
+  Fall: '03',
+};
