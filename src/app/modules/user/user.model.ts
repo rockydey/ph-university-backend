@@ -5,7 +5,12 @@ import config from '../../config';
 
 const userSchema = new Schema<IUser>(
   {
-    id: { type: String, required: true, unique: true, trim: true },
+    id: {
+      type: String,
+      required: [true, 'Id is required'],
+      unique: true,
+      trim: true,
+    },
     password: { type: String, required: true },
     needsPasswordChange: { type: Boolean, default: true },
     role: {

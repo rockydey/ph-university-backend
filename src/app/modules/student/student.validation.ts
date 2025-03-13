@@ -38,6 +38,7 @@ const createStudentValidationSchema = z.object({
   body: z.object({
     student: z.object({
       name: nameValidationSchema,
+      // user: z.string({ required_error: 'User is required' }),
       gender: z.enum(['male', 'female'], {
         required_error: 'Gender is required',
       }),
@@ -60,6 +61,9 @@ const createStudentValidationSchema = z.object({
       guardian: guardianValidationSchema,
       localGuardian: localGuardianValidationSchema,
       profileImg: z.string().optional(),
+      academicSemester: z.string({
+        required_error: 'Academic semester is required',
+      }),
     }),
   }),
 });
