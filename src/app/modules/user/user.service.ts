@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import config from '../../config';
 import { TAcademicSemester } from '../academic-semester/academic.semester.interface';
 import { AcademicSemester } from '../academic-semester/academic.semester.model';
@@ -6,6 +7,8 @@ import { Student } from '../student/student.model';
 import { IUser } from './user.interface';
 import { User } from './user.model';
 import { getStudentId } from './user.utils';
+import AppError from '../../errors/AppError';
+import httpStatus from 'http-status';
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   const userData: Partial<IUser> = {};
@@ -16,16 +19,37 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   const admissionSemester = await AcademicSemester.findById(
     payload.academicSemester,
   );
-  userData.id = await getStudentId(admissionSemester as TAcademicSemester);
 
-  const newUser = await User.create(userData);
+  const session = await mongoose.startSession();
 
-  if (Object.keys(newUser).length) {
-    payload.id = newUser.id;
-    payload.user = newUser._id;
+  try {
+    session.startTransaction();
 
-    const newStudent = await Student.create(payload);
-    return newStudent;
+    userData.id = await getStudentId(admissionSemester as TAcademicSemester);
+
+    const newUser = await User.create([userData], { session });
+
+    if (!newUser.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
+    }
+
+    payload.id = newUser[0].id;
+    payload.user = newUser[0]._id;
+
+    const newStudent = await Student.create([payload], { session });
+
+    if (!newStudent.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create student');
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return newStudent[0];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
   }
 };
 

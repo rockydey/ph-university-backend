@@ -14,6 +14,18 @@ const getAllStudent = catchAsync(async (req, res) => {
   });
 });
 
+const deleteStudent = catchAsync(async (req, res) => {
+  const result = await StudentService.deleteStudentFromDB(req.params.studentId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Student deleted successfully',
+    data: result,
+  });
+});
+
 export const StudentController = {
   getAllStudent,
+  deleteStudent,
 };

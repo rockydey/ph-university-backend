@@ -5,4 +5,6 @@ const router = Router();
 
 router.get('/', StudentController.getAllStudent);
 
+router.delete('/:studentId', StudentController.deleteStudent);
+
 export const StudentRoutes = router;
