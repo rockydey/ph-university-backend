@@ -11,8 +11,9 @@ const globalErrorHandler: ErrorRequestHandler = (
   next,
 ) => {
   const message = error.message || 'Something went wrong';
+  const statusCode = error.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
 
-  res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+  res.status(statusCode).json({
     success: false,
     message,
     error,

@@ -64,6 +64,9 @@ const createStudentValidationSchema = z.object({
       academicSemester: z.string({
         required_error: 'Academic semester is required',
       }),
+      academicDepartment: z.string({
+        required_error: 'Academic department is required',
+      }),
     }),
   }),
 });
