@@ -3,6 +3,7 @@ import { Student } from './student.model';
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
+import { TStudent } from './student.interface';
 
 const getAllStudentFromDB = async () => {
   const studentData = await Student.find()
@@ -62,7 +63,41 @@ const deleteStudentFromDB = async (id: string) => {
   }
 };
 
+const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
+  const { name, guardian, localGuardian, ...studentData } = payload;
+
+  const modifiedStudentData: Record<string, unknown> = {
+    ...studentData,
+  };
+
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedStudentData[`name.${key}`] = value;
+    }
+  }
+
+  if (guardian && Object.keys(guardian).length) {
+    for (const [key, value] of Object.entries(guardian)) {
+      modifiedStudentData[`guardian.${key}`] = value;
+    }
+  }
+
+  if (localGuardian && Object.keys(localGuardian).length) {
+    for (const [key, value] of Object.entries(localGuardian)) {
+      modifiedStudentData[`localGuardian.${key}`] = value;
+    }
+  }
+
+  const updatedStudent = await Student.findOneAndUpdate(
+    { id },
+    modifiedStudentData,
+    { new: true, runValidators: true },
+  );
+  return updatedStudent;
+};
+
 export const StudentService = {
   getAllStudentFromDB,
   deleteStudentFromDB,
+  updateStudentIntoDB,
 };
