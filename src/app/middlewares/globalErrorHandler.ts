@@ -3,15 +3,16 @@
 
 import { ErrorRequestHandler } from 'express';
 import httpStatus from 'http-status';
-import { TErrorSource } from '../interface/error.interface';
+import { TErrorSources } from '../interface/error.interface';
 import { ZodError } from 'zod';
 import config from '../config';
 import handleZodError from '../errors/HandleZodError';
+import handleValidationError from '../errors/HandleValidationError';
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   let message = error.message || 'Something went wrong!';
   let statusCode = error.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
-  let errorSource: TErrorSource = [
+  let errorSources: TErrorSources = [
     {
       path: '',
       message: 'Something went wrong!',
@@ -22,13 +23,18 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     const simplifiedError = handleZodError(error);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
-    errorSource = simplifiedError?.errorSource;
+    errorSources = simplifiedError?.errorSources;
+  } else if (error?.name === 'ValidationError') {
+    const simplifiedError = handleValidationError(error);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
   }
 
   res.status(statusCode).json({
     success: false,
     message,
-    errorSource,
+    errorSources,
     stack: config.node_env === 'development' ? error?.stack : undefined,
   });
   return;
