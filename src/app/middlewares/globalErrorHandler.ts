@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { ErrorRequestHandler } from 'express';
-import httpStatus from 'http-status';
 import { TErrorSources } from '../interface/error.interface';
 import { ZodError } from 'zod';
 import config from '../config';
@@ -10,10 +9,11 @@ import handleZodError from '../errors/HandleZodError';
 import handleValidationError from '../errors/HandleValidationError';
 import handleCastError from '../errors/HandleCastError';
 import handleDuplicateError from '../errors/HandleDuplicateError';
+import AppError from '../errors/AppError';
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
-  let message = error.message || 'Something went wrong!';
-  let statusCode = error.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
+  let message = 'Something went wrong!';
+  let statusCode = 500;
   let errorSources: TErrorSources = [
     {
       path: '',
@@ -41,6 +41,23 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
+  } else if (error instanceof AppError) {
+    statusCode = error?.statusCode;
+    message = error?.message;
+    errorSources = [
+      {
+        path: '',
+        message: error?.message,
+      },
+    ];
+  } else if (error instanceof Error) {
+    message = error?.message;
+    errorSources = [
+      {
+        path: '',
+        message: error?.message,
+      },
+    ];
   }
 
   res.status(statusCode).json({
