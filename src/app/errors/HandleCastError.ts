@@ -18,7 +18,7 @@ const handleCastError = (
 
   return {
     statusCode,
-    message: 'Invalid data type or format.',
+    message: 'Invalid Id or format.',
     errorSources,
   };
 };

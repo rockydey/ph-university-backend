@@ -9,6 +9,7 @@ import config from '../config';
 import handleZodError from '../errors/HandleZodError';
 import handleValidationError from '../errors/HandleValidationError';
 import handleCastError from '../errors/HandleCastError';
+import handleDuplicateError from '../errors/HandleDuplicateError';
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   let message = error.message || 'Something went wrong!';
@@ -32,6 +33,11 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     errorSources = simplifiedError?.errorSources;
   } else if (error?.name === 'CastError') {
     const simplifiedError = handleCastError(error);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (error?.code === 11000) {
+    const simplifiedError = handleDuplicateError(error);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
