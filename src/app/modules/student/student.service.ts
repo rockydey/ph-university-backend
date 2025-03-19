@@ -61,22 +61,25 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   // const fieldsQuery = await limitQuery.select(fields);
   // return fieldsQuery;
 
-  const studentQuery = new QueryBuilder<TStudent>(Student.find(), query)
+  const studentQuery = new QueryBuilder<TStudent>(
+    Student.find()
+      .populate('user')
+      .populate('academicSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      }),
+    query,
+  )
     .search(studentSearchableFields)
     .filter()
     .sort()
     .paginate()
     .fields();
 
-  const result = await studentQuery.queryModel
-    .populate('user')
-    .populate('academicSemester')
-    .populate({
-      path: 'academicDepartment',
-      populate: {
-        path: 'academicFaculty',
-      },
-    });
+  const result = await studentQuery.queryModel;
 
   return result;
 };
