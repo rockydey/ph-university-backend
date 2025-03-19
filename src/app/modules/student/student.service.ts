@@ -4,30 +4,71 @@ import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { studentSearchableFields } from './student.constant';
 
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
-  const queryObj = { ...query };
+  // const queryObj = { ...query };
+  // // ==> Searching
+  // let searchTerm = '';
+  // if (query.searchTerm) {
+  //   searchTerm = query.searchTerm as string;
+  // }
+  // const searchQuery = Student.find({
+  //   $or: ['email', 'presentAddress', 'name.firstName', 'name.lastName'].map(
+  //     (field) => ({
+  //       [field]: { $regex: searchTerm, $options: 'i' },
+  //     }),
+  //   ),
+  // });
+  // const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+  // excludeFields.forEach((field) => delete queryObj[field]);
+  // // ==> filtering
+  // const filterQuery = searchQuery
+  //   .find(queryObj)
+  //   .populate('user')
+  //   .populate('academicSemester')
+  //   .populate({
+  //     path: 'academicDepartment',
+  //     populate: {
+  //       path: 'academicFaculty',
+  //     },
+  //   });
+  // // ==> sorting
+  // let sort = '-createdAt';
+  // if (query.sort) {
+  //   sort = query.sort as string;
+  // }
+  // const sortQuery = filterQuery.sort(sort);
+  // // ==> pagination & limiting
+  // let limit = 10;
+  // let page = 1;
+  // let skip = 0;
+  // if (query.limit) {
+  //   limit = parseInt(query.limit as string);
+  // }
+  // if (query.page) {
+  //   page = Number(query.page);
+  //   skip = (page - 1) * limit;
+  // }
+  // const paginationQuery = sortQuery.skip(skip);
+  // const limitQuery = paginationQuery.limit(limit);
+  // // ==> fields
+  // let fields = '-__v';
+  // if (query.fields) {
+  //   fields = (query.fields as string).split(',').join(' ');
+  // }
+  // const fieldsQuery = await limitQuery.select(fields);
+  // return fieldsQuery;
 
-  let searchTerm = '';
-  if (query.searchTerm) {
-    searchTerm = query.searchTerm as string;
-  }
+  const studentQuery = new QueryBuilder<TStudent>(Student.find(), query)
+    .search(studentSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-  const searchQuery = Student.find({
-    $or: ['email', 'presentAddress', 'name.firstName', 'name.lastName'].map(
-      (field) => ({
-        [field]: { $regex: searchTerm, $options: 'i' },
-      }),
-    ),
-  });
-
-  const excludeFields = ['searchTerm', 'sort', 'limit'];
-  excludeFields.forEach((field) => delete queryObj[field]);
-
-  // console.log({ query, queryObj });
-  // filtering
-  const filterQuery = searchQuery
-    .find(queryObj)
+  const result = await studentQuery.queryModel
     .populate('user')
     .populate('academicSemester')
     .populate({
@@ -37,23 +78,7 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
       },
     });
 
-  // sorting
-  let sort = '-createdAt';
-  if (query.sort) {
-    sort = query.sort as string;
-  }
-
-  const sortQuery = filterQuery.sort(sort);
-
-  // limiting
-  let limit = 10;
-  if (query.limit) {
-    limit = parseInt(query.limit as string);
-  }
-
-  const limitQuery = await sortQuery.limit(limit);
-
-  return limitQuery;
+  return result;
 };
 
 const deleteStudentFromDB = async (id: string) => {
