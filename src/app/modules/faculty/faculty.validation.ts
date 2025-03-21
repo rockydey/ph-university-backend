@@ -15,33 +15,36 @@ const createFacultyValidationSchema = z.object({
       })
       .min(8, { message: 'Password must be at least 8 characters long' })
       .optional(),
-  }),
-  faculty: z.object({
-    designation: z.string({
-      required_error: 'Designation is required',
-    }),
-    name: createUserNameValidationSchema,
-    gender: z.enum([...Gender] as [string, ...string[]], {
-      required_error: 'Gender is required',
-    }),
-    dateOfBirth: z.string().optional(),
-    email: z.string({ required_error: 'Email is required' }).email(),
-    contactNo: z.string({ required_error: 'Contact no is required' }),
-    emergencyContactNo: z.string({
-      required_error: 'Emergency contact no is required',
-    }),
-    presentAddress: z.string({
-      required_error: 'Present address is required',
-    }),
-    permanentAddress: z.string({
-      required_error: 'Permanent address is required',
-    }),
-    profileImg: z.string().optional(),
-    bloodGroup: z.enum([...BloodGroup] as [string, ...string[]]).optional(),
-    academicDepartment: z.string({
-      required_error: 'Academic department is required',
-    }),
-    isDeleted: z.boolean().optional().default(false),
+    faculty: z.object(
+      {
+        designation: z.string({
+          required_error: 'Designation is required',
+        }),
+        name: createUserNameValidationSchema,
+        gender: z.enum([...Gender] as [string, ...string[]], {
+          required_error: 'Gender is required',
+        }),
+        dateOfBirth: z.string().optional(),
+        email: z.string({ required_error: 'Email is required' }).email(),
+        contactNo: z.string({ required_error: 'Contact no is required' }),
+        emergencyContactNo: z.string({
+          required_error: 'Emergency contact no is required',
+        }),
+        presentAddress: z.string({
+          required_error: 'Present address is required',
+        }),
+        permanentAddress: z.string({
+          required_error: 'Permanent address is required',
+        }),
+        profileImg: z.string().optional(),
+        bloodGroup: z.enum([...BloodGroup] as [string, ...string[]]).optional(),
+        academicDepartment: z.string({
+          required_error: 'Academic department is required',
+        }),
+        isDeleted: z.boolean().optional().default(false),
+      },
+      { required_error: 'Faculty information is required' },
+    ),
   }),
 });
 
@@ -65,47 +68,52 @@ const updateFacultyValidationSchema = z.object({
       })
       .min(8, { message: 'Password must be at least 8 characters long' })
       .optional(),
-  }),
-  faculty: z.object({
-    designation: z
-      .string({
-        required_error: 'Designation is required',
+    faculty: z
+      .object({
+        designation: z
+          .string({
+            required_error: 'Designation is required',
+          })
+          .optional(),
+        name: updateUserNameValidationSchema.optional(),
+        gender: z
+          .enum([...Gender] as [string, ...string[]], {
+            required_error: 'Gender is required',
+          })
+          .optional(),
+        dateOfBirth: z.string().optional(),
+        email: z
+          .string({ required_error: 'Email is required' })
+          .email()
+          .optional(),
+        contactNo: z
+          .string({ required_error: 'Contact no is required' })
+          .optional(),
+        emergencyContactNo: z
+          .string({
+            required_error: 'Emergency contact no is required',
+          })
+          .optional(),
+        presentAddress: z
+          .string({
+            required_error: 'Present address is required',
+          })
+          .optional(),
+        permanentAddress: z
+          .string({
+            required_error: 'Permanent address is required',
+          })
+          .optional(),
+        profileImg: z.string().optional(),
+        bloodGroup: z.enum([...BloodGroup] as [string, ...string[]]).optional(),
+        academicDepartment: z
+          .string({
+            required_error: 'Academic department is required',
+          })
+          .optional(),
+        isDeleted: z.boolean().optional().default(false),
       })
       .optional(),
-    name: updateUserNameValidationSchema.optional(),
-    gender: z
-      .enum([...Gender] as [string, ...string[]], {
-        required_error: 'Gender is required',
-      })
-      .optional(),
-    dateOfBirth: z.string().optional(),
-    email: z.string({ required_error: 'Email is required' }).email().optional(),
-    contactNo: z
-      .string({ required_error: 'Contact no is required' })
-      .optional(),
-    emergencyContactNo: z
-      .string({
-        required_error: 'Emergency contact no is required',
-      })
-      .optional(),
-    presentAddress: z
-      .string({
-        required_error: 'Present address is required',
-      })
-      .optional(),
-    permanentAddress: z
-      .string({
-        required_error: 'Permanent address is required',
-      })
-      .optional(),
-    profileImg: z.string().optional(),
-    bloodGroup: z.enum([...BloodGroup] as [string, ...string[]]).optional(),
-    academicDepartment: z
-      .string({
-        required_error: 'Academic department is required',
-      })
-      .optional(),
-    isDeleted: z.boolean().optional().default(false),
   }),
 });
 
