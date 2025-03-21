@@ -127,6 +127,12 @@ const createStudentValidationSchema = z.object({
 
 const updateStudentValidationSchema = z.object({
   body: z.object({
+    password: z
+      .string({
+        invalid_type_error: 'Password must be a string',
+      })
+      .min(8, { message: 'Password must be at least 8 characters long' })
+      .optional(),
     student: z.object({
       name: updateNameValidationSchema.optional(),
       // user: z.string({ required_error: 'User is required' }),

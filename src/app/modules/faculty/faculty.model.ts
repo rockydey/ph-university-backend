@@ -2,7 +2,7 @@ import { model, Schema } from 'mongoose';
 import { FacultyModel, TFaculty, TUserName } from './faculty.interface';
 import { BloodGroup, Gender } from './faculty.constant';
 
-const nameSchema = new Schema<TUserName>({
+const userNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
     required: true,
@@ -29,7 +29,7 @@ const facultySchema = new Schema<TFaculty, FacultyModel>(
       trim: true,
     },
     name: {
-      type: nameSchema,
+      type: userNameSchema,
       required: true,
     },
     user: {
