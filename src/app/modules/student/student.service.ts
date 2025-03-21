@@ -90,18 +90,18 @@ const deleteStudentFromDB = async (id: string) => {
   try {
     session.startTransaction();
 
-    const isUserExist = await User.findOne({ id }).session(session);
+    const isUserExist = await User.findById(id).session(session);
     if (!isUserExist) {
       throw new AppError(httpStatus.NOT_FOUND, 'User does not exist');
     }
 
-    const isStudentExist = await Student.findOne({ id }).session(session);
+    const isStudentExist = await Student.findById(id).session(session);
     if (!isStudentExist) {
       throw new AppError(httpStatus.NOT_FOUND, 'Student does not exist');
     }
 
-    const deleteStudent = await Student.findOneAndUpdate(
-      { id },
+    const deleteStudent = await Student.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
@@ -109,8 +109,11 @@ const deleteStudentFromDB = async (id: string) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete student');
     }
 
-    const deleteUser = await User.findOneAndUpdate(
-      { id },
+    // get user id from deleted student
+    const userId = deleteStudent.user;
+
+    const deleteUser = await User.findByIdAndUpdate(
+      userId,
       { isDeleted: true },
       { new: true, session },
     );
@@ -154,8 +157,8 @@ const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
     }
   }
 
-  const updatedStudent = await Student.findOneAndUpdate(
-    { id },
+  const updatedStudent = await Student.findByIdAndUpdate(
+    id,
     modifiedStudentData,
     { new: true, runValidators: true },
   );
