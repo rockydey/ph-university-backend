@@ -7,10 +7,10 @@ const router = Router();
 
 router.get('/', StudentController.getAllStudent);
 
-router.delete('/:studentId', StudentController.deleteStudent);
+router.delete('/:id', StudentController.deleteStudent);
 
 router.patch(
-  '/:studentId',
+  '/:id',
   validateRequest(StudentValidation.updateStudentValidationSchema),
   StudentController.updateStudent,
 );
