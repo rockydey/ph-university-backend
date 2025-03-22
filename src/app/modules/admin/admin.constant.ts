@@ -12,3 +12,15 @@ export const BloodGroup: TBloodGroup[] = [
   'O+',
   'O-',
 ];
+
+export const AdminSearchableFields = [
+  'email',
+  'name.firstName',
+  'name.lastName',
+  'name.middleName',
+  'contactNo',
+  'emergencyContactNo',
+  'presentAddress',
+  'permanentAddress',
+  'designation',
+];
