@@ -90,10 +90,10 @@ const deleteStudentFromDB = async (id: string) => {
   try {
     session.startTransaction();
 
-    const isUserExist = await User.findById(id).session(session);
-    if (!isUserExist) {
-      throw new AppError(httpStatus.NOT_FOUND, 'User does not exist');
-    }
+    // const isUserExist = await User.findById(id).session(session);
+    // if (!isUserExist) {
+    //   throw new AppError(httpStatus.NOT_FOUND, 'User does not exist');
+    // }
 
     const isStudentExist = await Student.findById(id).session(session);
     if (!isStudentExist) {
