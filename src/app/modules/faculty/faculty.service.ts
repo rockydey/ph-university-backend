@@ -98,8 +98,35 @@ const deleteFacultyFromDB = async (id: string) => {
   }
 };
 
+const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
+  const { name, ...facultyData } = payload;
+
+  const isUserExist = await Faculty.findById(id);
+  if (!isUserExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "Faculty doesn't exists!");
+  }
+
+  const modifiedFacultyData: Record<string, unknown> = {
+    ...facultyData,
+  };
+
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedFacultyData[`name.${key}`] = value;
+    }
+  }
+
+  const result = await Faculty.findByIdAndUpdate(id, modifiedFacultyData, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+};
+
 export const FacultyService = {
   getAllFacultiesFromDB,
   getSingleFacultyFromDB,
   deleteFacultyFromDB,
+  updateFacultyIntoDB,
 };
