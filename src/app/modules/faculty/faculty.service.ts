@@ -50,7 +50,6 @@ const deleteFacultyFromDB = async (id: string) => {
     session.startTransaction();
 
     const isUserExist = await Faculty.isUserExists(id);
-
     if (!isUserExist) {
       throw new AppError(httpStatus.BAD_REQUEST, "Faculty doesn't exist");
     }
