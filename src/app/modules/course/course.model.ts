@@ -24,7 +24,6 @@ const courseSchema = new Schema<TCourse>({
     type: String,
     required: true,
     trim: true,
-    unique: true,
   },
   code: {
     type: Number,
@@ -43,6 +42,16 @@ const courseSchema = new Schema<TCourse>({
     type: Boolean,
     default: false,
   },
+});
+
+courseSchema.pre('find', async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+courseSchema.pre('findOne', async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
 });
 
 export const Course = model<TCourse>('Course', courseSchema);
