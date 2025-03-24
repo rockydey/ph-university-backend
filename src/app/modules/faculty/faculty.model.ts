@@ -115,13 +115,9 @@ const facultySchema = new Schema<TFaculty, FacultyModel>(
 );
 
 facultySchema.virtual('fullName').get(function () {
-  return (
-    this?.name?.firstName +
-    ' ' +
-    (this?.name?.middleName ? this?.name?.middleName : '') +
-    ' ' +
-    this?.name?.lastName
-  );
+  return [this?.name?.firstName, this?.name?.middleName, this?.name?.lastName]
+    .filter(Boolean) // Removes undefined, null, or empty strings
+    .join(' ');
 });
 
 facultySchema.pre('find', async function (next) {

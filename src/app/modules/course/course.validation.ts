@@ -41,7 +41,16 @@ const updateCourseValidationSchema = z.object({
   }),
 });
 
+const facultiesWithCourseValidationSchema = z.object({
+  body: z.object({
+    faculties: z
+      .array(z.string({ required_error: 'Faculties is required' }))
+      .nonempty('At least one faculty must be assigned'),
+  }),
+});
+
 export const CourseValidation = {
   createCourseValidationSchema,
   updateCourseValidationSchema,
+  facultiesWithCourseValidationSchema,
 };
