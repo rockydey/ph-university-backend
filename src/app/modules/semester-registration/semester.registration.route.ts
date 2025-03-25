@@ -18,6 +18,7 @@ router.patch(
   validateRequest(
     SemesterRegistrationValidation.updateSemesterRegistrationValidationSchema,
   ),
+  SemesterRegistrationController.updateSemesterRegistration,
 );
 
 router.get('/', SemesterRegistrationController.getAllSemesterRegistration);
