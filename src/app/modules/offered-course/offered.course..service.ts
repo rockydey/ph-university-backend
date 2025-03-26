@@ -8,6 +8,7 @@ import { TOfferedCourse } from './offered.course.interface';
 import { OfferedCourse } from './offered.course.model';
 import httpStatus from 'http-status';
 import { hasTimeConflict } from './offered.course.utils';
+import { RegistrationStatus } from '../semester-registration/semester.registration.constant';
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const {
@@ -101,6 +102,60 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   return result;
 };
 
+const updateOfferedCourseIntoDB = async (
+  id: string,
+  payload: Pick<TOfferedCourse, 'faculty' | 'startTime' | 'days' | 'endTime'>,
+) => {
+  const { faculty, days, startTime, endTime } = payload;
+
+  const isOfferedCourseExists = await OfferedCourse.findById(id);
+  if (!isOfferedCourseExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Offered course not found');
+  }
+
+  const isFacultyExists = await Faculty.findById(faculty);
+  if (!isFacultyExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Faculty not found');
+  }
+
+  const semesterRegistration = isOfferedCourseExists.semesterRegistration;
+
+  const semesterRegistrationStatus =
+    await SemesterRegistration.findById(semesterRegistration).select('status');
+  if (semesterRegistrationStatus?.status !== RegistrationStatus.UPCOMING) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      `You can't update this offered course as it is ${semesterRegistrationStatus?.status}`,
+    );
+  }
+
+  // get all schedules of the faculties
+  const assignSchedules = await OfferedCourse.find({
+    semesterRegistration,
+    faculty,
+    days: { $in: days },
+  }).select('days startTime endTime');
+  const newSchedule = {
+    days,
+    startTime,
+    endTime,
+  };
+
+  if (hasTimeConflict(assignSchedules, newSchedule)) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      'This faculty is not available at this time',
+    );
+  }
+
+  const result = await OfferedCourse.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+  return result;
+};
+
 export const OfferedCourseService = {
   createOfferedCourseIntoDB,
+  updateOfferedCourseIntoDB,
 };
