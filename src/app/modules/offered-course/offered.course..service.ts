@@ -7,6 +7,7 @@ import { SemesterRegistration } from '../semester-registration/semester.registra
 import { TOfferedCourse } from './offered.course.interface';
 import { OfferedCourse } from './offered.course.model';
 import httpStatus from 'http-status';
+import { hasTimeConflict } from './offered.course.utils';
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const {
@@ -16,6 +17,9 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     faculty,
     course,
     section,
+    days,
+    startTime,
+    endTime,
   } = payload;
 
   const isSemesterRegistrationExists =
@@ -71,6 +75,25 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       `Offered course with same section is already exists`,
+    );
+  }
+
+  // get all schedules of the faculties
+  const assignSchedules = await OfferedCourse.find({
+    semesterRegistration,
+    faculty,
+    days: { $in: days },
+  }).select('days startTime endTime');
+  const newSchedule = {
+    days,
+    startTime,
+    endTime,
+  };
+
+  if (hasTimeConflict(assignSchedules, newSchedule)) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      'This faculty is not available at this time',
     );
   }
 
