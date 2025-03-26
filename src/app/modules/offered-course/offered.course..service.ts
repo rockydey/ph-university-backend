@@ -178,8 +178,21 @@ const getAllOfferedCourseFromDB = async (query: Record<string, unknown>) => {
   return result;
 };
 
+const getSingleOfferedCourse = async (id: string) => {
+  const result = await OfferedCourse.findById(id)
+    .populate('semesterRegistration')
+    .populate('academicSemester')
+    .populate('academicDepartment')
+    .populate('course')
+    .populate('faculty')
+    .populate('academicFaculty');
+
+  return result;
+};
+
 export const OfferedCourseService = {
   createOfferedCourseIntoDB,
   updateOfferedCourseIntoDB,
   getAllOfferedCourseFromDB,
+  getSingleOfferedCourse,
 };

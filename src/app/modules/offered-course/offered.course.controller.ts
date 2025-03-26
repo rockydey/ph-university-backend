@@ -38,7 +38,19 @@ const getAllOfferedCourse = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: 'Offered course fetched successfully',
+    message: 'Offered courses are fetched successfully',
+    data: result,
+  });
+});
+
+const getSingleOfferedCourse = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await OfferedCourseService.getSingleOfferedCourse(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Offered course is fetched successfully',
     data: result,
   });
 });
@@ -47,4 +59,5 @@ export const OfferedCourseController = {
   createOfferedCourse,
   updateOfferedCourse,
   getAllOfferedCourse,
+  getSingleOfferedCourse,
 };
