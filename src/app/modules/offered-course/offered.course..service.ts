@@ -9,6 +9,8 @@ import { OfferedCourse } from './offered.course.model';
 import httpStatus from 'http-status';
 import { hasTimeConflict } from './offered.course.utils';
 import { RegistrationStatus } from '../semester-registration/semester.registration.constant';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { OfferedCourseSearchableFields } from './offered.course.constant';
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const {
@@ -155,7 +157,29 @@ const updateOfferedCourseIntoDB = async (
   return result;
 };
 
+const getAllOfferedCourseFromDB = async (query: Record<string, unknown>) => {
+  const offeredCourseQuery = new QueryBuilder(
+    OfferedCourse.find()
+      .populate('semesterRegistration')
+      .populate('academicSemester')
+      .populate('academicDepartment')
+      .populate('course')
+      .populate('faculty')
+      .populate('academicFaculty'),
+    query,
+  )
+    .search(OfferedCourseSearchableFields)
+    .fields()
+    .sort()
+    .filter()
+    .paginate();
+
+  const result = await offeredCourseQuery.queryModel;
+  return result;
+};
+
 export const OfferedCourseService = {
   createOfferedCourseIntoDB,
   updateOfferedCourseIntoDB,
+  getAllOfferedCourseFromDB,
 };
