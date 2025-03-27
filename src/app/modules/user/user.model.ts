@@ -11,8 +11,9 @@ const userSchema = new Schema<IUser, UserModel>(
       unique: true,
       trim: true,
     },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: 0 },
     needsPasswordChange: { type: Boolean, default: true },
+    passwordChangedAt: { type: Date, require: false },
     role: {
       type: String,
       required: true,
@@ -46,7 +47,7 @@ userSchema.post('save', function (doc, next) {
 });
 
 userSchema.statics.isUserExists = async function (id: string) {
-  return await User.findOne({ id });
+  return await User.findOne({ id }).select('+password');
 };
 
 userSchema.statics.isPasswordMatched = async function (
