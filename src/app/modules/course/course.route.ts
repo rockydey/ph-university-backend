@@ -34,18 +34,16 @@ router.patch(
 
 router.put(
   '/:courseId/assign-faculties',
-  auth('admin'),
   validateRequest(CourseValidation.facultiesWithCourseValidationSchema),
   CourseController.assignFacultiesWithCourse,
 );
 
 router.delete(
   '/:courseId/remove-faculties',
-  auth('admin'),
   validateRequest(CourseValidation.facultiesWithCourseValidationSchema),
   CourseController.removeFacultiesWithCourse,
 );
 
-router.delete('/:id', CourseController.deleteCourse);
+router.delete('/:id', auth('admin'), CourseController.deleteCourse);
 
 export const CourseRoutes = router;
