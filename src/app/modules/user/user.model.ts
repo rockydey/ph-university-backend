@@ -11,6 +11,12 @@ const userSchema = new Schema<IUser, UserModel>(
       unique: true,
       trim: true,
     },
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
+      trim: true,
+    },
     password: { type: String, required: true, select: 0 },
     needsPasswordChange: { type: Boolean, default: true },
     passwordChangedAt: { type: Date, require: false },
