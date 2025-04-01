@@ -6,6 +6,7 @@ import httpStatus from 'http-status';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { sendEmail } from '../../utils/sendEmail';
+import { verifyToken } from './auth.utils';
 // import { createToken } from './auth.utils';
 
 const loginUser = async (payload: TLoginUser) => {
@@ -110,10 +111,7 @@ const changePasswordIntoDB = async (
 };
 
 const refreshToken = async (token: string) => {
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string,
-  ) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
   const { userId, iat } = decoded;
 
   const user = await User.isUserExists(userId);
@@ -207,10 +205,7 @@ const resetPassword = async (
     throw new AppError(httpStatus.FORBIDDEN, 'User has been blocked');
   }
 
-  const decoded = jwt.verify(
-    token,
-    config.jwt_access_secret as string,
-  ) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_access_secret as string);
 
   if (payload?.id !== decoded?.userId) {
     throw new AppError(httpStatus.FORBIDDEN, 'Forbidden request!');

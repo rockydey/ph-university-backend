@@ -2,15 +2,21 @@ import { Router } from 'express';
 import { StudentController } from './student.controller';
 import validateRequest from '../../middlewares/validateRequest';
 import { StudentValidation } from './student.validation';
+import auth from '../../middlewares/auth';
 
 const router = Router();
 
-router.get('/', StudentController.getAllStudent);
+router.get('/', auth('admin', 'faculty'), StudentController.getAllStudent);
 
-router.delete('/:id', StudentController.deleteStudent);
+router.delete(
+  '/:id',
+  auth('faculty', 'admin'),
+  StudentController.deleteStudent,
+);
 
 router.patch(
   '/:id',
+  auth('admin', 'student'),
   validateRequest(StudentValidation.updateStudentValidationSchema),
   StudentController.updateStudent,
 );
