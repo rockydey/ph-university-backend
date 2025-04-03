@@ -15,8 +15,13 @@ import { AcademicDepartment } from '../academic-department/academic-department.m
 import { Faculty } from '../faculty/faculty.model';
 import { Admin } from '../admin/admin.model';
 import { JwtPayload } from 'jsonwebtoken';
+import { uploadImage } from '../../utils/uploadImage';
 
-const createStudentIntoDB = async (password: string, payload: TStudent) => {
+const createStudentIntoDB = async (
+  file: any,
+  password: string,
+  payload: TStudent,
+) => {
   const userData: Partial<IUser> = {};
 
   userData.password = password || (config.default_password as string);
@@ -42,6 +47,16 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
 
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
+    }
+
+    // Upload image to cloudinary
+    const path = file?.path;
+    const fileName = `${userData?.id}${payload?.name?.firstName}`;
+    const uploadResult = await uploadImage(path, fileName);
+
+    if (uploadResult) {
+      const { secure_url } = uploadResult;
+      payload.profileImg = secure_url;
     }
 
     payload.id = newUser[0].id;
