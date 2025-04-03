@@ -36,7 +36,6 @@ const createAdminValidationSchema = z.object({
         permanentAddress: z.string({
           required_error: 'Permanent address is required',
         }),
-        profileImg: z.string().optional(),
         bloodGroup: z.enum([...BloodGroup] as [string, ...string[]]).optional(),
         isDeleted: z.boolean().optional().default(false),
       },

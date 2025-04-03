@@ -36,7 +36,6 @@ const createFacultyValidationSchema = z.object({
         permanentAddress: z.string({
           required_error: 'Permanent address is required',
         }),
-        profileImg: z.string().optional(),
         bloodGroup: z.enum([...BloodGroup] as [string, ...string[]]).optional(),
         academicDepartment: z.string({
           required_error: 'Academic department is required',

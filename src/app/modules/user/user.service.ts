@@ -80,7 +80,11 @@ const createStudentIntoDB = async (
   }
 };
 
-const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+const createFacultyIntoDB = async (
+  file: any,
+  password: string,
+  payload: TFaculty,
+) => {
   const userData: Partial<IUser> = {};
 
   userData.password = password || (config.default_password as string);
@@ -108,6 +112,16 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
     }
 
+    // Upload image to cloudinary
+    const path = file?.path;
+    const fileName = `${userData?.id}${payload?.name?.firstName}`;
+    const uploadResult = await uploadImage(path, fileName);
+
+    if (uploadResult) {
+      const { secure_url } = uploadResult;
+      payload.profileImg = secure_url;
+    }
+
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
 
@@ -128,7 +142,11 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   }
 };
 
-const createAdminIntoDB = async (password: string, payload: TFaculty) => {
+const createAdminIntoDB = async (
+  file: any,
+  password: string,
+  payload: TFaculty,
+) => {
   const userData: Partial<IUser> = {};
 
   userData.password = password || (config.default_password as string);
@@ -146,6 +164,15 @@ const createAdminIntoDB = async (password: string, payload: TFaculty) => {
 
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
+    }
+    // Upload image to cloudinary
+    const path = file?.path;
+    const fileName = `${userData?.id}${payload?.name?.firstName}`;
+    const uploadResult = await uploadImage(path, fileName);
+
+    if (uploadResult) {
+      const { secure_url } = uploadResult;
+      payload.profileImg = secure_url;
     }
 
     payload.id = newUser[0].id;
